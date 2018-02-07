@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Health</string>
+    <string name="sign_out">Sign out</string>
+    <string name="singin_with_google">SingIn with Google!</string>
+</resources>
