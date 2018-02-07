@@ -4,16 +4,20 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
 
@@ -31,7 +35,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        GoogleSignInOptions geo = new GoogleSignInOptions.Builder.DEFAULT_SIGN_IN
+        GoogleSignInOptions geo = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -39,7 +43,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 .addApi(GOOGLE_SIGN_IN_API)
                 .build();
 
-        stastusTextView =(TextView) findViewById(R.id.status_text);
+        stastusTextView =(TextView) findViewById(R.id.status_textview);
         signInButton =(SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
 
@@ -62,9 +66,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
     }
 
-    private void signOut() {
-    }
-
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent,RC_SIGN_IN);
@@ -76,14 +77,29 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result =Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
 
     }
 
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            GoogleSignInAccount acct = result.getSignInAccount();
+            stastusTextView.setText("Hello," + acct.getDisplayName());
+
+        } else {
+
+        }
+    }
+
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG,"onConnectionFailed:" + connectionResult);
+
+
 
     }
 
@@ -91,4 +107,14 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                stastusTextView.setText("signed out");
+            }
+        });
+    }
+
 }
