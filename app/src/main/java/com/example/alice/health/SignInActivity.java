@@ -1,5 +1,6 @@
 package com.example.alice.health;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,19 +8,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
-    Button signInButton;
+    SignInButton signInButton;
+    Button signOutButton;
     TextView stastusTextView;
     GoogleApiClient mGoogleApiClient;
     private static final String TAG ="SignInActivity";
-    private static final int PC_SIGN_IN = 9001;
+    private static final int RC_SIGN_IN = 9001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,16 +37,36 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 .enableAutoManage(this,this)
                 .addApi(GOOGLE_SIGN_IN_API)
                 .build();
-stastusTextView =(TextView) findViewById(R.id.status_text);
-signInButton =(Button) findViewById(R.id.sign_in_button);
-signInButton.setOnClickListener(this);
+
+        stastusTextView =(TextView) findViewById(R.id.status_text);
+        signInButton =(SignInButton) findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(this);
+
+        signOutButton =(Button)findViewById(R.id.signOutButton);
+        signOutButton.setOnClickListener(this);
 
 
     }
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.sign_in_button:
+            signIn();
+            break;
+            case R.id.signOutButton:
+            signOut();
+            break;
+        }
 
+    }
+
+    private void signOut() {
+    }
+
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent,RC_SIGN_IN);
     }
 
     @Override
