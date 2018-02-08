@@ -89,6 +89,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             GoogleSignInAccount acct = result.getSignInAccount();
             stastusTextView.setText("Hello," + acct.getDisplayName());
 
+            Intent intent = new Intent(SignInActivity  .this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+
         } else {
 
         }
